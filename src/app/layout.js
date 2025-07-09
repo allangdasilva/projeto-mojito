@@ -1,9 +1,5 @@
 import { Navbar } from "@/components/Navbar";
 import "./globals.css";
-import gsap from "gsap";
-import { ScrollTrigger, SplitText } from "gsap/all";
-// Registro os plugins de forma geral, para não repetir código
-gsap.registerPlugin(ScrollTrigger, SplitText);
 
 export const metadata = {
   title: "MOJITO",

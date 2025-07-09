@@ -4,6 +4,8 @@ import { navLinks } from "@/constants";
 import Image from "next/image";
 import { useGSAP } from "@gsap/react";
 import { gsap } from "gsap";
+import { ScrollTrigger } from "gsap/all";
+gsap.registerPlugin(ScrollTrigger);
 
 export function Navbar() {
   useGSAP(() => {
