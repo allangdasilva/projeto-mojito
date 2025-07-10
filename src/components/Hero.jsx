@@ -83,6 +83,13 @@ export default function Hero() {
       // método logo em sequência
       .to(".right-leaf", { y: 200 }, 0)
       .to(".left-leaf", { y: -200 }, 0);
+  }, []);
+
+  // Cloquei essa animação dentro de useEffect porque preciso esperar o vídeo estar
+  // carregado antes de criar a timeline com ScrollTrigger
+  React.useEffect(() => {
+    if (!videoRef.current) return;
+    const video = videoRef.current;
 
     // Quero descobrir onde a animação começa e onde termina
     // Esse valor será diferente para dispositivos mobile
@@ -97,25 +104,49 @@ export default function Hero() {
     // a animação
     const endValue = isMobile ? "120% top" : "bottom top";
 
-    let tl = gsap.timeline({
-      scrollTrigger: {
-        trigger: "video",
-        start: startValue,
-        end: endValue,
-        scrub: true,
-        // pin: true = isso manterá o video preso na tela enquanto o usuário rola o scroll
-        // ou seja, conforme você rola o video não se move
-        pin: true,
-      },
-    });
-    videoRef.current.onloadedmetadata = () => {
-      tl.to(videoRef.current, {
+    const onReady = () => {
+      const tl = gsap.timeline({
+        scrollTrigger: {
+          trigger: "video",
+          start: startValue,
+          end: endValue,
+          // scrub: true = A animação fica vinculada ao scroll.
+          scrub: true,
+          // pin: true = isso manterá o video preso na tela enquanto o usuário rola o
+          // scroll. Ou seja, é isso que trava o video na tela
+          pin: true,
+        },
+      });
+
+      tl.to(video, {
         // Dessa forma atualizo o tempo atual, baseado no tempo de duração do vídeo
-        currentTime: videoRef.current.duration,
+        // currentTime: Essa é uma propriedade do elemento de vídeo HTML que
+        // representa: O tempo atual de reprodução, em segundos.
+        // duration: Essa é outra propriedade nativa do vídeo e representa: A duração
+        // total do vídeo.
+        // Estou dizendo: "Crie uma animação que aumente a propriedade currentTime do
+        // video, começando do valor atual(normalmente 0) até o valor
+        // video.duration(fim do vídeo)".
+        currentTime: video.duration,
       });
     };
-    console.log(videoRef.current.duration);
-  }, []);
+
+    // Se o vídeo já estiver carregado
+    // A propriedade .readyState indica o estado de carregamento do conteúdo do
+    // vídeo. Ela retorna um número que representa quão pronto o vídeo está para ser
+    // reproduzido.
+    if (video.readyState >= 1) {
+      onReady();
+    } else {
+      // Se ainda não, aguarde o carregamento
+      video.addEventListener("loadedmetadata", onReady);
+    }
+
+    // Limpeza
+    return () => {
+      video.removeEventListener("loadedmetadata", onReady);
+    };
+  }, [isMobile]);
 
   return (
     <>
