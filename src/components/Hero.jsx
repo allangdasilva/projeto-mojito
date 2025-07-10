@@ -5,9 +5,14 @@ import { useGSAP } from "@gsap/react";
 import gsap from "gsap";
 import { SplitText, ScrollTrigger } from "gsap/all";
 import React from "react";
+import { useMediaQuery } from "react-responsive";
 gsap.registerPlugin(SplitText, ScrollTrigger);
 
 export default function Hero() {
+  const videoRef = React.useRef();
+  // Com o pacote react-responsive vou verificar se estou em dispositivo mobile
+  const isMobile = useMediaQuery({ maxWidth: 767 });
+
   const titleRef = React.useRef();
   const paragraphRef_01 = React.useRef();
   const paragraphRef_02 = React.useRef();
@@ -78,6 +83,38 @@ export default function Hero() {
       // método logo em sequência
       .to(".right-leaf", { y: 200 }, 0)
       .to(".left-leaf", { y: -200 }, 0);
+
+    // Quero descobrir onde a animação começa e onde termina
+    // Esse valor será diferente para dispositivos mobile
+    // O que esses valores significam?
+    // "top 50%" = quando o topo do video atingir 50% da tela, a animação começa.
+    // "center 60%" = quando o centro do video atingir 60% da tela, a animação começa.
+    const startValue = isMobile ? "top 50%" : "center 60%";
+    // "120% top" = nesse caso temos porcentagem, isso significa que quando o topo do
+    // video ultrapassar 120% do topo da tela(ou seja, fica bem longe da tela) encerra
+    // a animação
+    // "bottom top" = quando a parte de baixo do video atingir o topo da tela, encerra
+    // a animação
+    const endValue = isMobile ? "120% top" : "bottom top";
+
+    let tl = gsap.timeline({
+      scrollTrigger: {
+        trigger: "video",
+        start: startValue,
+        end: endValue,
+        scrub: true,
+        // pin: true = isso manterá o video preso na tela enquanto o usuário rola o scroll
+        // ou seja, conforme você rola o video não se move
+        pin: true,
+      },
+    });
+    videoRef.current.onloadedmetadata = () => {
+      tl.to(videoRef.current, {
+        // Dessa forma atualizo o tempo atual, baseado no tempo de duração do vídeo
+        currentTime: videoRef.current.duration,
+      });
+    };
+    console.log(videoRef.current.duration);
   }, []);
 
   return (
@@ -121,6 +158,17 @@ export default function Hero() {
           </div>
         </div>
       </section>
+
+      <div className="video absolute inset-0">
+        {/* playsInline serve para não mostrar elementos adicionais, como a barra de navegação ou opções de volume */}
+        <video
+          ref={videoRef}
+          src="/videos/output.mp4"
+          muted
+          playsInline
+          preload="auto"
+        />
+      </div>
     </>
   );
 }
