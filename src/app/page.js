@@ -1,3 +1,10 @@
+import Hero from "@/components/Hero";
+
 export default function Home() {
-  return <></>;
+  return (
+    <>
+      <Hero />
+      <div className="h-dvh bg-black"></div>
+    </>
+  );
 }
