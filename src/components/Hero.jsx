@@ -4,12 +4,32 @@ import Image from "next/image";
 import { useGSAP } from "@gsap/react";
 import gsap from "gsap";
 import { SplitText, ScrollTrigger } from "gsap/all";
+import React from "react";
 gsap.registerPlugin(SplitText, ScrollTrigger);
 
 export default function Hero() {
+  const titleRef = React.useRef();
+  const paragraphRef_01 = React.useRef();
+  const paragraphRef_02 = React.useRef();
+
+  function addOpacity(ele) {
+    return ele.classList.add("opacity-100");
+  }
+
   // Vou utilizar o plugin SplitText que divide o texto de um elemento HTML em
   // caracteres, palavras e/ou linhas individuais
   useGSAP(() => {
+    // Como o next pré renderiza a página, ele meio que quebra o efeito dos textos
+    // iniciarem invisiveis, pq o gsap não consegue deixar os elementos invisiveis
+    // antes dele, então eu defini todos elementos necessários com opacity-0 e aqui no
+    // useGSAP eu trago eles de volta para opacity-100, agora o next vai pré rendezirar
+    // os elementos de texto já com a class opacity-0
+    [titleRef.current, paragraphRef_01.current, paragraphRef_02.current].map(
+      (ref) => {
+        addOpacity(ref);
+      }
+    );
+
     // Primeiro parâmetro: elemento desejado
     // Segundo parâmetro: para separar os caracteres e as palavras, deve-se utilizar
     // type: “chars,words”. Para separar apenas as linhas, deve utilizar type: “lines”.
@@ -28,6 +48,7 @@ export default function Hero() {
       ease: "expo.out",
       // stagger: efeito de escalonamento, cada letra sofre o efeito 0.06s após a outra
       stagger: 0.06,
+      opacity: 0,
     });
 
     gsap.from(paragraphSplit.lines, {
@@ -62,7 +83,9 @@ export default function Hero() {
   return (
     <>
       <section id="hero" className="noisy">
-        <h1 className="title">MOJITO</h1>
+        <h1 className="title opacity-0" ref={titleRef}>
+          MOJITO
+        </h1>
 
         <Image
           src={`/images/hero-left-leaf.png`}
@@ -84,12 +107,12 @@ export default function Hero() {
           <div className="content">
             <div className="space-y-5 hidden md:block">
               <p>Ótimo. Fresco. Clássico.</p>
-              <p className="subtitle text-left">
+              <p className="subtitle text-left opacity-0" ref={paragraphRef_01}>
                 Saborear o <br /> Espírito do Verão
               </p>
             </div>
             <div className="view-cocktails">
-              <p className="subtitle">
+              <p className="subtitle opacity-0" ref={paragraphRef_02}>
                 Cada coquetel do nosso menu é uma mistura de ingredientes de
                 primeira qualidade <br /> - criados para te satisfazer
               </p>
