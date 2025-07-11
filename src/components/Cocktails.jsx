@@ -9,6 +9,10 @@ gsap.registerPlugin(ScrollTrigger);
 
 export default function Cocktails() {
   useGSAP(() => {
+    document.querySelectorAll(".gsap-init").forEach((el) => {
+      el.classList.remove("gsap-init");
+    });
+
     const parallaxTimeline = gsap.timeline({
       scrollTrigger: {
         trigger: "#cocktails",
@@ -26,6 +30,7 @@ export default function Cocktails() {
     <>
       <section id="cocktails" className="noisy">
         <Image
+          className="gsap-init"
           src={`/images/cocktail-left-leaf.png`}
           width={294}
           height={332}
@@ -33,6 +38,7 @@ export default function Cocktails() {
           id="c-left-leaf"
         />
         <Image
+          className="gsap-init"
           src={`/images/cocktail-right-leaf.png`}
           width={315}
           height={332}
@@ -53,7 +59,7 @@ export default function Cocktails() {
                       {country} | {detail}
                     </p>
                   </div>
-                  <span>- {price}</span>
+                  <span>{price}</span>
                 </li>
               ))}
             </ul>
@@ -70,7 +76,7 @@ export default function Cocktails() {
                       {country} | {detail}
                     </p>
                   </div>
-                  <span>- {price}</span>
+                  <span>{price}</span>
                 </li>
               ))}
             </ul>

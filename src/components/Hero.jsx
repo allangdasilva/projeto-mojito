@@ -13,27 +13,17 @@ export default function Hero() {
   // Com o pacote react-responsive vou verificar se estou em dispositivo mobile
   const isMobile = useMediaQuery({ maxWidth: 767 });
 
-  const titleRef = React.useRef();
-  const paragraphRef_01 = React.useRef();
-  const paragraphRef_02 = React.useRef();
-
-  function addOpacity(ele) {
-    return ele.classList.add("opacity-100");
-  }
-
   // Vou utilizar o plugin SplitText que divide o texto de um elemento HTML em
   // caracteres, palavras e/ou linhas individuais
   useGSAP(() => {
-    // Como o next pré renderiza a página, ele meio que quebra o efeito dos textos
-    // iniciarem invisiveis, pq o gsap não consegue deixar os elementos invisiveis
-    // antes dele, então eu defini todos elementos necessários com opacity-0 e aqui no
-    // useGSAP eu trago eles de volta para opacity-100, agora o next vai pré rendezirar
-    // os elementos de texto já com a class opacity-0
-    [titleRef.current, paragraphRef_01.current, paragraphRef_02.current].map(
-      (ref) => {
-        addOpacity(ref);
-      }
-    );
+    // Problema: flash de renderização incorreta que acontece:
+    // Porque o GSAP depende do DOM já renderizado, Mas o Next.js renderiza a página
+    // instantaneamente antes de o useGSAP aplicar seus efeitos
+    // (como opacity: 0, transform, etc).
+    // Solução: ocultar todo o conteúdo visualmente até o GSAP estar pronto.
+    document.querySelectorAll(".gsap-init").forEach((el) => {
+      el.classList.remove("gsap-init");
+    });
 
     // Primeiro parâmetro: elemento desejado
     // Segundo parâmetro: para separar os caracteres e as palavras, deve-se utilizar
@@ -151,9 +141,7 @@ export default function Hero() {
   return (
     <>
       <section id="hero" className="noisy">
-        <h1 className="title opacity-0" ref={titleRef}>
-          MOJITO
-        </h1>
+        <h1 className="title gsap-init">MOJITO</h1>
 
         <Image
           src={`/images/hero-left-leaf.png`}
@@ -161,7 +149,7 @@ export default function Hero() {
           height={461}
           priority
           alt="left-leaf"
-          className="left-leaf"
+          className="left-leaf gsap-init"
         />
         <Image
           src={`/images/hero-right-leaf.png`}
@@ -169,18 +157,18 @@ export default function Hero() {
           height={478}
           priority
           alt="right-leaf"
-          className="right-leaf"
+          className="right-leaf gsap-init"
         />
         <div className="body">
           <div className="content">
             <div className="space-y-5 hidden md:block">
               <p>Ótimo. Fresco. Clássico.</p>
-              <p className="subtitle text-left opacity-0" ref={paragraphRef_01}>
+              <p className="subtitle text-left gsap-init">
                 Saborear o <br /> Espírito do Verão
               </p>
             </div>
             <div className="view-cocktails">
-              <p className="subtitle opacity-0" ref={paragraphRef_02}>
+              <p className="subtitle gsap-init">
                 Cada coquetel do nosso menu é uma mistura de ingredientes de
                 primeira qualidade <br /> - criados para te satisfazer
               </p>
@@ -193,6 +181,7 @@ export default function Hero() {
       <div className="video absolute inset-0">
         {/* playsInline serve para não mostrar elementos adicionais, como a barra de navegação ou opções de volume */}
         <video
+          className="gsap-init"
           ref={videoRef}
           src="/videos/output.mp4"
           muted
