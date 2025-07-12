@@ -81,6 +81,7 @@ export default function About() {
               alt="grid-img-1"
               width={330}
               height={285}
+              priority
             />
           </div>
 
@@ -91,6 +92,7 @@ export default function About() {
               alt="grid-img-2"
               width={580}
               height={285}
+              priority
             />
           </div>
 
@@ -101,6 +103,7 @@ export default function About() {
               alt="grid-img-5"
               width={860}
               height={860}
+              priority
             />
           </div>
         </div>
@@ -113,6 +116,7 @@ export default function About() {
               alt="grid-img-3"
               width={780}
               height={285}
+              priority
             />
           </div>
 
@@ -123,6 +127,7 @@ export default function About() {
               alt="grid-img-4"
               width={480}
               height={285}
+              priority
             />
           </div>
         </div>
